@@ -1,0 +1,32 @@
+Package: Catullus
+Title: Analyze Single-Cell Data in the 'tiledbsoma' Experiment Object Format 
+Version: 1.0
+Authors@R: 
+    person("Cole", "Nawrocki", , "ccn7wn@virginia.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-7776-2095"))
+Description: A set of simple functions for manipulating and analyzing scRNA-seq data that is in the 
+    'tiledbsoma' experiment object format. This data format offers speedy queries and reduced memory 
+    load, compared to traditional scRNA-seq analysis packages. These advantages enable users to 
+    analyze large datasets on devices with inadequate RAM to read such data directly into R.
+URL: https://github.com/ccnawrocki/Catullus   
+License: MIT + file LICENSE 
+Encoding: UTF-8
+Depends:
+    R (>= 4.3.1)
+Imports:
+    tiledb (>= 0.22.0),  
+    tiledbsoma (>= 0.99.2), 
+    tidyverse (>= 2.0.0), 
+    Matrix (>= 1.6-4),
+    methods (>= 4.3.2), 
+    tibble (>= 3.2.1), 
+    stats (>= 4.3.2), 
+    matrixTests (>= 0.2.3)
+Suggests:
+    BiocManager,
+    presto,
+    DESeq2,
+    limma,
+    edgeR
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
