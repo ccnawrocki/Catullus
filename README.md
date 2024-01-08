@@ -1,4 +1,4 @@
-# Catullus <img src='Catullus_sticker_v1.png' align="right" height="139" /></a>
+# Catullus <img src='Catullus_sticker_v1.png' align="right" height="200" /></a>
 A collection of useful functions for scRNA-seq analysis, meant to be utilized with tiledbsoma experiment objects.
 
 ## Installation
