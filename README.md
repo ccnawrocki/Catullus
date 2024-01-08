@@ -42,12 +42,12 @@ Examining the schema (not shown), we see that louvain clustering was performed o
 ```
 Catullus::ViewMeta(exp_object = experiment, color_var = "louvain_33_clusters", labeling = T, legend = F)
 ```
-<img src='ViewMeta_plot_example.png' height=400 width=700/></a>
+<img src='vignettes/ViewMeta_plot_example.png' height=400 width=700/></a>
 
 Now, let's look again at the UMAP, but let's see which clusters express a known gene of interest, *pax6*.
 ```
 Catullus::ViewExpression(exp_object = experiment, genes = "pax6", label_var = "louvain_33_clusters")
 ```
-<img src='ViewExpression_plot_example.png' height=400 width=700/></a>
+<img src='vignettes/ViewExpression_plot_example.png' height=400 width=700/></a>
 
 See the `.Rmd` files in the `vignettes` folder for more detailed usage examples. 
