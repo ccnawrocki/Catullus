@@ -42,7 +42,7 @@ Examining the schema (not shown), we see that louvain clustering was performed o
 ```
 ViewMeta(exp_object = experiment, color_var = "louvain_33_clusters", labeling = T, legend = F)
 ```
-<img src='ViewMeta_plot_example.png' height=500 width=500/></a>
+<img src='ViewMeta_plot_example.png' height=400 width=800/></a>
 
 Now, let's look again at the UMAP, but let's see which clusters express a known gene of interest, *pax6*.
 ```
