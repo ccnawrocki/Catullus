@@ -1,4 +1,5 @@
-# Catullus
+# Catullus ![Catullus_sticker_v1](https://github.com/ccnawrocki/Catullus/assets/68296470/bc6a43d6-8a30-47d5-808c-62d7e1ceef24)
+
 A collection of useful functions for scRNA-seq analysis, meant to be utilized with tiledbsoma experiment objects.
 
 ## Installation
