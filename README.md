@@ -21,6 +21,7 @@ DoPseudobulkAggregation
 ViewDETesting
 ViewMeta
 ViewExpression
+GetDEData
 GetObjectSchema
 GetGeneData
 GetCellGroupIDs
@@ -34,6 +35,8 @@ The following vignette uses a subset of the data from [Briggs et al. 2018](https
 
 First, open the `tiledbsoma` experiment object and check the schema. 
 ```
+library(tiledbsoma)
+library(Catullus)
 experiment <- tiledbsoma::SOMAExperimentOpen("briggs_data_stage22_SOMA")
 GetObjectSchema(experiment)
 ```
@@ -50,4 +53,4 @@ Catullus::ViewExpression(exp_object = experiment, genes = "pax6", label_var = "l
 ```
 <img src='vignettes/ViewExpression_plot_example.png' height=400 width=700/></a>
 
-See the `.Rmd` files in the `vignettes` folder for more detailed usage examples. 
+See the `.Rmd` files in the `vignettes` folder for more detailed usage examples and to see `Catullus` scaled to larger SOMA objects.  
