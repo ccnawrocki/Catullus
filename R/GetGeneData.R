@@ -45,7 +45,7 @@ GetGeneData <- function(exp_object,
   
   # Make the cell IDs the row names, if necessary. 
   if (id_rownames == T) {
-    df <- column_to_rownames(df, var="var_id")
+    df <- tibble::column_to_rownames(df, var="var_id")
   }
   
   # Return the gene data as a data frame. 

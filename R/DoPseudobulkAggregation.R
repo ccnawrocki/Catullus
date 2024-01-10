@@ -33,12 +33,12 @@ DoPseudobulkAggregation <- function(exp_object,
                                     genes = NULL) {
   
   # Using Catullus functions to get the expression data and metadata. 
-  exp <- GetExpressionData(exp_object=exp_object, 
-                           cells=cells, 
-                           genes=genes)
-  meta <- GetMetaData(exp_object=exp_object,
-                      variables = c(condition_var, replicate_var),
-                      cells=cells)
+  exp <- Catullus::GetExpressionData(exp_object=exp_object, 
+                                     cells=cells, 
+                                     genes=genes)
+  meta <- Catullus::GetMetaData(exp_object=exp_object,
+                                variables = c(condition_var, replicate_var),
+                                cells=cells)
   
   # Creating a design matrix based on the conditions and replicates. 
   des_mat <- Matrix::sparse.model.matrix(~ 0 + get(condition_var):get(replicate_var), data = meta) |> methods::as("CsparseMatrix")

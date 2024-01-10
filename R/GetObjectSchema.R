@@ -27,20 +27,20 @@ GetObjectSchema <- function(exp_object,
   if (method == "return") {
     schema_list[["EXPRESSION DATA"]][["slots"]] <- as.list(express_slots)
   }
-  express_slots <- str_flatten(express_slots, collapse = ", ")
+  express_slots <- stringr::str_flatten(express_slots, collapse = ", ")
   express_shape <- exp_object$ms$get("RNA")$X$get("counts")$shape()
   express_shape <- paste(express_shape, c("cells", "genes"), sep = " ")
   if (method == "return") {
     schema_list[["EXPRESSION DATA"]][["shape"]] <- as.list(express_shape)
   }
-  express_shape <- str_flatten(express_shape, collapse = ", ")
+  express_shape <- stringr::str_flatten(express_shape, collapse = ", ")
   
   ## Dimensional Reduction Data 
   dimred_info <- exp_object$ms$get("RNA")$obsm$names()
   if (method == "return") {
     schema_list[["DIMENSIONAL REDUCTION DATA"]] <- as.list(dimred_info)
   }
-  dimred_info <- str_flatten(dimred_info, collapse = ", ")
+  dimred_info <- stringr::str_flatten(dimred_info, collapse = ", ")
   
   ## Gene Data
   gene_info <- exp_object$ms$get("RNA")$var$colnames()
@@ -48,6 +48,14 @@ GetObjectSchema <- function(exp_object,
     schema_list[["GENE DATA"]] <- as.list(gene_info)
   }
   gene_info <- exp_object$ms$get("RNA")$var$schema()$ToString()
+  
+  ## DE Data
+  de_info <- exp_object$ms$get("RNA")$varm$names()
+  de_info <- de_info[de_info != "PCs"]
+  if (method == "return") {
+    schema_list[["DE DATA"]] <- as.list(de_info)
+  }
+  de_info <- stringr::str_flatten(de_info, collapse = ", ")
   
   ## Printing or returning the schema for the user. 
   if (method == "return") {
@@ -57,7 +65,8 @@ GetObjectSchema <- function(exp_object,
     cat(paste("METADATA: ", deparse(substitute(exp_object)), "$obs", sep = ""), "\n", meta_info, "\n\n", 
         paste("EXPRESSION DATA: ", deparse(substitute(exp_object)), "$ms$get(\"RNA\")$X", sep = ""), "\n", "slots: ", express_slots, "\n", "shape: ", express_shape, "\n\n",
         paste("DIMESNIONAL REDUCTION DATA: ", deparse(substitute(exp_object)), "$ms$get(\"RNA\")$obsm", sep = ""), "\n", dimred_info, "\n\n", 
-        paste("GENE DATA: ", deparse(substitute(exp_object)), "$ms$get(\"RNA\")$var", sep = ""), "\n", gene_info,
+        paste("GENE DATA: ", deparse(substitute(exp_object)), "$ms$get(\"RNA\")$var", sep = ""), "\n", gene_info, "\n\n",
+        paste("DE DATA: ", deparse(substitute(exp_object)), "$ms$get(\"RNA\")$varm", sep = ""), "\n", de_info,
         sep = "")
   }
 }
