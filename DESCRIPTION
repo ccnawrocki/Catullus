@@ -12,9 +12,10 @@ URL: https://github.com/ccnawrocki/Catullus
 License: MIT + file LICENSE 
 Encoding: UTF-8
 Depends:
-    R (>= 4.3.1)
-Imports:
+    R (>= 4.3.1),
     tiledb (>= 0.22.0),  
+    tiledbsoma (>= 1.6.2)
+Imports: 
     tidyverse (>= 2.0.0), 
     Matrix (>= 1.6-4),
     methods (>= 4.3.2), 
