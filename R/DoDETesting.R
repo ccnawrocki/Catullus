@@ -6,7 +6,8 @@
 #' Wilcoxon Rank Sum (with and without \code{presto}), DESeq2, limma, edgeR, and 
 #' glmGamPoi.
 #'
-#' @param exp_object A \code{tiledbsoma} experiment object. 
+#' @param input_object A \code{tiledbsoma} experiment object or a list 
+#' containing counts as the first entry and metadata as the second entry.  
 #' @param condition_var The string name of the metadata column that contains the
 #' condition that is being tested.
 #' @param comparison Either a singular value that appears in the 
@@ -25,7 +26,7 @@
 #' pseudobulking will not be performed. \code{NULL} by default.
 #' @param method The string name of the method that the user wants to employ. 
 #' Can be \code{"save"}, which will save the results of the testing inside of 
-#' the given \code{exp_object}, or \code{"return"}, which will return the 
+#' the given \code{input_object}, or \code{"return"}, which will return the 
 #' results of the testing as a data frame. \code{"return"} by default. 
 #' @param separator A string value to separate the condition and the replicate 
 #' labels in the column names of the resulting matrix. It is recommended to use 
@@ -33,11 +34,12 @@
 #' \code{replicate_var} values. \code{":"} by default.
 #' @param cells The string name of a singular cell of interest or a vector 
 #' containing the string names of many cells of interest. \code{NULL} by 
-#' default. 
+#' default. Only applies if \code{input_object} is a \code{tiledbsoma} object. 
 #' @param genes The string name of a singular gene of interest or a vector 
-#' containing the string names of many genes of interest. 
+#' containing the string names of many genes of interest. Only applies if 
+#' \code{input_object} is a \code{tiledbsoma} object. 
 #' @export
-DoDETesting <- function(exp_object, 
+DoDETesting <- function(input_object, 
                         condition_var,
                         comparison, 
                         test = "wilcox",
@@ -51,35 +53,67 @@ DoDETesting <- function(exp_object,
   if (length(comparison) == 1) {
     comparison <- c(comparison, "Other")
   }
-
-  # Pseudobulk, if necessary.
-  if (is.null(replicate_var) != T) {
-    cat("Pseudobulking...")
-    cts <- Catullus::DoPseudobulkAggregation(exp_object = exp_object, 
-                                             condition_var = condition_var, 
-                                             replicate_var = replicate_var, 
-                                             separator = separator, 
-                                             cells = cells, 
-                                             genes = genes)
-    meta <- data.frame(row.names = colnames(cts))
-    meta[[condition_var]] <- ifelse(test = (stringr::str_split(rownames(meta), separator, simplify = T)[,1] == comparison[1]), 
-                                    yes = comparison[1], 
-                                    no = comparison[2])
-    cat(" DONE\n")
-  }
   
-  # If pseudobulking is not needed, just query the data. 
+  # Query the data based on the input.
+  if (is(input_object, "SOMAExperiment")) {
+    # Pseudobulk, if necessary.
+    if (is.null(replicate_var) != T) {
+      cat("Pseudobulking...")
+      cts <- Catullus::DoPseudobulkAggregation(input_object = input_object, 
+                                               condition_var = condition_var, 
+                                               replicate_var = replicate_var, 
+                                               separator = separator, 
+                                               cells = cells, 
+                                               genes = genes)
+      meta <- data.frame(row.names = colnames(cts))
+      meta[[condition_var]] <- ifelse(test = (stringr::str_split(rownames(meta), separator, simplify = T)[,1] == comparison[1]), 
+                                      yes = comparison[1], 
+                                      no = comparison[2])
+      cat(" DONE\n")
+    }
+    
+    # If pseudobulking is not needed, just query the data. 
+    else {
+      cts <- Catullus::GetExpressionData(exp_object = input_object, 
+                                         genes = genes, 
+                                         cells = cells, 
+                                         X_slot = "counts") |> Matrix::t()
+      meta <- GetMetaData(exp_object = input_object, 
+                          variables = c(condition_var), 
+                          cells = cells)
+      meta[[condition_var]] <- ifelse(test = (meta[[condition_var]] == comparison[1]), 
+                                      yes = comparison[1], 
+                                      no = comparison[2])
+    }
+  }
+  else if (is(input_object, "list")) {
+    # Pseudobulk, if necessary.
+    if (is.null(replicate_var) != T) {
+      cat("Pseudobulking...")
+      cts <- Catullus::DoPseudobulkAggregation(input_object = input_object, 
+                                               condition_var = condition_var, 
+                                               replicate_var = replicate_var, 
+                                               separator = separator, 
+                                               cells = cells, 
+                                               genes = genes)
+      meta <- data.frame(row.names = colnames(cts))
+      meta[[condition_var]] <- ifelse(test = (stringr::str_split(rownames(meta), separator, simplify = T)[,1] == comparison[1]), 
+                                      yes = comparison[1], 
+                                      no = comparison[2])
+      cat(" DONE\n")
+    }
+    
+    # If pseudobulking is not needed, just query the data. 
+    else {
+      cts <- input_object[[1]] |> Matrix::t()
+      meta <- input_object[[2]] |> subset(select = c(condition_var))
+      meta[[condition_var]] <- ifelse(test = (meta[[condition_var]] == comparison[1]), 
+                                      yes = comparison[1], 
+                                      no = comparison[2])
+    }
+  }
   else {
-    cts <- Catullus::GetExpressionData(exp_object = exp_object, 
-                                       genes = genes, 
-                                       cells = cells, 
-                                       X_slot = "counts") |> Matrix::t()
-    meta <- GetMetaData(exp_object = exp_object, 
-                        variables = c(condition_var), 
-                        cells = cells)
-    meta[[condition_var]] <- ifelse(test = (meta[[condition_var]] == comparison[1]), 
-                                    yes = comparison[1], 
-                                    no = comparison[2])
+    cat("Not a valid input\n")
   }
   
   # Next, do the testing method indicated by the user. 
@@ -292,21 +326,26 @@ DoDETesting <- function(exp_object,
   
   # Returning or saving the results.
   if (method == "save") {
-    
-    # Naming the result.
-    de_name <- paste(comparison[1], "vs", comparison[2], test, "de", sep = "_")
-    
-    # Writing and registering the result to the SOMA object on disk.
-    tmp <- tiledbsoma::SOMAExperimentOpen(uri = exp_object$uri, mode = "WRITE")
-    sdf <- tiledbsoma::write_soma(de_df, uri = de_name, soma_parent = tmp$ms$get("RNA")$varm)
-    tmp$ms$get("RNA")$varm$set(sdf, name = de_name)
-    cat("Saved ", de_name, " in varm.\n", sep = "")
-    
-    # Returning the updated SOMA object.
-    uri_to_open <- exp_object$uri
-    tmp2 <- tiledbsoma::SOMAExperimentOpen(uri_to_open)
-    remove(tmp)
-    return(tmp2)
+    if (is(input_object, "SOMAExperiment")) {
+      # Naming the result.
+      de_name <- paste(comparison[1], "vs", comparison[2], test, "de", sep = "_")
+      
+      # Writing and registering the result to the SOMA object on disk.
+      tmp <- tiledbsoma::SOMAExperimentOpen(uri = input_object$uri, mode = "WRITE")
+      sdf <- tiledbsoma::write_soma(de_df, uri = de_name, soma_parent = tmp$ms$get("RNA")$varm)
+      tmp$ms$get("RNA")$varm$set(sdf, name = de_name)
+      cat("Saved ", de_name, " in varm.\n", sep = "")
+      
+      # Returning the updated SOMA object.
+      uri_to_open <- input_object$uri
+      tmp2 <- tiledbsoma::SOMAExperimentOpen(uri_to_open)
+      remove(tmp)
+      return(tmp2)
+    }
+    else {
+      input_object[[3]] <- de_df
+      return(input_object)
+    }
   }
   else {
     

@@ -3,8 +3,8 @@
 #' This function returns a volcano plot, displaying the results of specified 
 #' differential expression testing within a \code{tiledbsoma} object. 
 #' 
-#' @param input_object A \code{tiledbsoma} experiment object or a data frame 
-#' returned by \code{DoDETesting}.
+#' @param input_object A \code{tiledbsoma} experiment object, a data frame, or a
+#' list returned by \code{DoDETesting}.
 #' @param de_name The string name of differential expression testing of interest 
 #' within the varm slot of the given \code{tiledbsoma} object. \code{NULL} by 
 #' default. 
@@ -34,6 +34,9 @@ ViewDETesting <- function(input_object,
   }
   else if (is(input_object, "data.frame")) {
     de_df <- input_object
+  }
+  else if (is(input_object, "list")) {
+    de_df <- input_object[[3]]
   }
   else {
     cat("Not a valid input\n")

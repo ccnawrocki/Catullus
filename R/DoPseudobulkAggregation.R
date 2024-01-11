@@ -8,7 +8,8 @@
 #' creating global variables called \code{Catullus_genes} that stores the vector 
 #' of genes and \code{Catullus_cells} that stores the vector of cells.  
 #' 
-#' @param exp_object A \code{tiledbsoma} experiment object. 
+#' @param input_object A \code{tiledbsoma} experiment object or a list 
+#' containing counts as the first entry and metadata as the second entry. 
 #' @param condition_var The string name of a variable in the object's metadata 
 #' that contains the condition labels that will be used for DE testing. 
 #' @param replicate_var The string name of a variable in the object's metadata
@@ -20,25 +21,34 @@
 #' \code{replicate_var} values. \code{":"} by default.
 #' @param cells The string name of a singular cell of interest or a vector 
 #' containing the string names of many cells of interest. \code{NULL} by 
-#' default.
+#' default. Only applies if \code{input_object} is a \code{tiledbsoma} object. 
 #' @param genes The string name of a singular gene of interest or a vector 
 #' containing the string names of many genes of interest. \code{NULL} by 
-#' default.
+#' default. Only applies if \code{input_object} is a \code{tiledbsoma} object. 
 #' @export
-DoPseudobulkAggregation <- function(exp_object, 
+DoPseudobulkAggregation <- function(input_object, 
                                     condition_var, 
                                     replicate_var,
                                     separator = ":",
                                     cells = NULL, 
                                     genes = NULL) {
   
-  # Using Catullus functions to get the expression data and metadata. 
-  exp <- Catullus::GetExpressionData(exp_object=exp_object, 
-                                     cells=cells, 
-                                     genes=genes)
-  meta <- Catullus::GetMetaData(exp_object=exp_object,
-                                variables = c(condition_var, replicate_var),
-                                cells=cells)
+  # Using Catullus functions to get the expression data and metadata, if needed.
+  if (is(input_object, "SOMAExperiment")) {
+    exp <- Catullus::GetExpressionData(exp_object=input_object, 
+                                       cells=cells, 
+                                       genes=genes)
+    meta <- Catullus::GetMetaData(exp_object=input_object,
+                                  variables = c(condition_var, replicate_var),
+                                  cells=cells)
+  }
+  else if (is(input_object, "list")) {
+    exp <- input_object[[1]]
+    meta <- input_object[[2]]
+  }
+  else {
+    cat("Not a valid input\n")
+  }
   
   # Creating a design matrix based on the conditions and replicates. 
   des_mat <- Matrix::sparse.model.matrix(~ 0 + get(condition_var):get(replicate_var), data = meta) |> methods::as("CsparseMatrix")

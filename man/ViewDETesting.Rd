@@ -15,8 +15,8 @@ ViewDETesting(
 )
 }
 \arguments{
-\item{input_object}{A \code{tiledbsoma} experiment object or a data frame
-returned by \code{DoDETesting}.}
+\item{input_object}{A \code{tiledbsoma} experiment object, a data frame, or a
+list returned by \code{DoDETesting}.}
 
 \item{de_name}{The string name of differential expression testing of interest
 within the varm slot of the given \code{tiledbsoma} object. \code{NULL} by

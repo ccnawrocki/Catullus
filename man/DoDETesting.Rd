@@ -5,7 +5,7 @@
 \title{Perform differential expression testing.}
 \usage{
 DoDETesting(
-  exp_object,
+  input_object,
   condition_var,
   comparison,
   test = "wilcox",
@@ -17,7 +17,8 @@ DoDETesting(
 )
 }
 \arguments{
-\item{exp_object}{A \code{tiledbsoma} experiment object.}
+\item{input_object}{A \code{tiledbsoma} experiment object or a list
+containing counts as the first entry and metadata as the second entry.}
 
 \item{condition_var}{The string name of the metadata column that contains the
 condition that is being tested.}
@@ -41,7 +42,7 @@ pseudobulking will not be performed. \code{NULL} by default.}
 
 \item{method}{The string name of the method that the user wants to employ.
 Can be \code{"save"}, which will save the results of the testing inside of
-the given \code{exp_object}, or \code{"return"}, which will return the
+the given \code{input_object}, or \code{"return"}, which will return the
 results of the testing as a data frame. \code{"return"} by default.}
 
 \item{separator}{A string value to separate the condition and the replicate
@@ -51,10 +52,11 @@ a value that does not appear in any of the \code{condition_var} or
 
 \item{cells}{The string name of a singular cell of interest or a vector
 containing the string names of many cells of interest. \code{NULL} by
-default.}
+default. Only applies if \code{input_object} is a \code{tiledbsoma} object.}
 
 \item{genes}{The string name of a singular gene of interest or a vector
-containing the string names of many genes of interest.}
+containing the string names of many genes of interest. Only applies if
+\code{input_object} is a \code{tiledbsoma} object.}
 }
 \description{
 This function returns the results of testing for differentially-expressed

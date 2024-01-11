@@ -5,7 +5,7 @@
 \title{Aggregate expression data in preparation for pseudobulk DE testing.}
 \usage{
 DoPseudobulkAggregation(
-  exp_object,
+  input_object,
   condition_var,
   replicate_var,
   separator = ":",
@@ -14,7 +14,8 @@ DoPseudobulkAggregation(
 )
 }
 \arguments{
-\item{exp_object}{A \code{tiledbsoma} experiment object.}
+\item{input_object}{A \code{tiledbsoma} experiment object or a list
+containing counts as the first entry and metadata as the second entry.}
 
 \item{condition_var}{The string name of a variable in the object's metadata
 that contains the condition labels that will be used for DE testing.}
@@ -30,11 +31,11 @@ a value that does not appear in any of the \code{condition_var} or
 
 \item{cells}{The string name of a singular cell of interest or a vector
 containing the string names of many cells of interest. \code{NULL} by
-default.}
+default. Only applies if \code{input_object} is a \code{tiledbsoma} object.}
 
 \item{genes}{The string name of a singular gene of interest or a vector
 containing the string names of many genes of interest. \code{NULL} by
-default.}
+default. Only applies if \code{input_object} is a \code{tiledbsoma} object.}
 }
 \description{
 This function returns a sparse matrix in dgCMatrix format that contains the
