@@ -35,8 +35,6 @@ The following vignette uses a subset of the data from [Briggs et al. 2018](https
 
 First, open the `tiledbsoma` experiment object and check the schema. 
 ```
-library(tiledb)
-library(tiledbsoma)
 library(Catullus)
 experiment <- tiledbsoma::SOMAExperimentOpen("briggs_data_stage22_SOMA")
 GetObjectSchema(experiment)
