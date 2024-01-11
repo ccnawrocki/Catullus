@@ -45,13 +45,16 @@ ViewDETesting <- function(input_object,
   # Getting the comparison levels in the correct order.
   de_df <- de_df[order(de_df$log2FC, decreasing = F),]
   conds <- unique(de_df$group)
+  color_v <- c(conds[1], "Neither", conds[2])
+  names(color_v) <- cols
+  cols <- names(sort(color_v))
   
   # Adding information to the DE data for plotting. 
   de_df$delabel <- 'Neither'
   de_df$delabel[de_df$p_adj<p_adj_cutoff & de_df$log2FC < (-1*lfc_cutoff)] <- conds[1]
   de_df$delabel[de_df$p_adj<p_adj_cutoff & de_df$log2FC > lfc_cutoff] <- conds[2]
   de_df$lbl <- NA
-  de_df$lbl[de_df$delabel != "Neither"] <- de_df$gene[de_df$delabel != 'Neither']
+  de_df$lbl[de_df$delabel != "Neither"] <- de_df$gene[de_df$delabel != "Neither"]
   
   # Making the plot.
   p <- ggplot2::ggplot(data = de_df, 
@@ -60,8 +63,7 @@ ViewDETesting <- function(input_object,
                                               col=delabel, 
                                               label=lbl)) +
     ggplot2::geom_point() + 
-    ggplot2::scale_color_manual(values = cols, 
-                                labels = c(conds[1], "Neither", conds[2])) +
+    ggplot2::scale_color_manual(values = cols) +
     ggplot2::geom_vline(xintercept=c(-1*lfc_cutoff, lfc_cutoff), col="black") + 
     ggplot2::geom_hline(yintercept=-log10(p_adj_cutoff), col="black") + 
     ggrepel::geom_text_repel(max.overlaps = repel_overlaps, show.legend = F)
