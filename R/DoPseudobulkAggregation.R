@@ -72,6 +72,10 @@ DoPseudobulkAggregation <- function(input_object,
                               x = colnames(agg_mat))
   }
   
+  # Removing any columns with zero counts.
+  idx <- which(Matrix::colSums(agg_mat) == 0)
+  agg_mat <- agg_mat[,-idx]
+  
   # Returning the result.
   return(agg_mat)
 }
