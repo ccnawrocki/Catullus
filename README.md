@@ -52,4 +52,3 @@ Catullus::ViewExpression(exp_object = experiment, genes = "pax6", label_var = "l
 ```
 <img src='vignettes/ViewExpression_plot_example.png' height=400 width=700/></a>
 
-See the `.Rmd` files in the `vignettes` folder for more detailed usage examples and to see `Catullus` scaled to larger SOMA objects.  
